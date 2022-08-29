@@ -116,6 +116,7 @@ set(MICROPY_SOURCE_PORT
     machine_uart.c
     machine_wdt.c
     main.c
+    modbootsel.c
     modmachine.c
     modrp2.c
     modutime.c
@@ -145,6 +146,7 @@ set(MICROPY_SOURCE_QSTR
     ${PROJECT_SOURCE_DIR}/machine_timer.c
     ${PROJECT_SOURCE_DIR}/machine_uart.c
     ${PROJECT_SOURCE_DIR}/machine_wdt.c
+    ${PROJECT_SOURCE_DIR}/modbootsel.c
     ${PROJECT_SOURCE_DIR}/modmachine.c
     ${PROJECT_SOURCE_DIR}/modrp2.c
     ${PROJECT_SOURCE_DIR}/moduos.c
