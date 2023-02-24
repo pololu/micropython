@@ -57,6 +57,7 @@ STATIC bool repl_display_debugging_info = 0;
 #define EXEC_FLAG_SOURCE_IS_VSTR        (1 << 4)
 #define EXEC_FLAG_SOURCE_IS_FILENAME    (1 << 5)
 #define EXEC_FLAG_SOURCE_IS_READER      (1 << 6)
+#define EXEC_FLAG_NO_INTERRUPT          (1 << 7)
 
 // parses, compiles and executes the code in the lexer
 // frees the lexer before returning
@@ -113,7 +114,11 @@ STATIC int parse_compile_execute(const void *source, mp_parse_input_kind_t input
         }
 
         // execute code
-        mp_hal_set_interrupt_char(CHAR_CTRL_C); // allow ctrl-C to interrupt us
+        if (exec_flags & EXEC_FLAG_NO_INTERRUPT) {
+            mp_hal_set_interrupt_char(-1);
+        } else {
+            mp_hal_set_interrupt_char(CHAR_CTRL_C); // allow Ctrl+C to interrupt us
+        }
         #if MICROPY_REPL_INFO
         start = mp_hal_ticks_ms();
         #endif
@@ -710,6 +715,30 @@ int pyexec_frozen_module(const char *name) {
         #if MICROPY_MODULE_FROZEN_MPY
         case MP_FROZEN_MPY:
             return parse_compile_execute(frozen_data, MP_PARSE_FILE_INPUT, EXEC_FLAG_SOURCE_IS_RAW_CODE);
+        #endif
+
+        default:
+            mp_printf(MICROPY_ERROR_PRINTER, "could not find module '%s'\n", name);
+            return false;
+    }
+}
+
+int pyexec_frozen_boot_module(const char *name) {
+    void *frozen_data;
+    int frozen_type;
+    mp_find_frozen_module(name, &frozen_type, &frozen_data);
+
+    switch (frozen_type) {
+        #if MICROPY_MODULE_FROZEN_STR
+        case MP_FROZEN_STR:
+            return parse_compile_execute(frozen_data, MP_PARSE_FILE_INPUT,
+                EXEC_FLAG_NO_INTERRUPT);
+        #endif
+
+        #if MICROPY_MODULE_FROZEN_MPY
+        case MP_FROZEN_MPY:
+            return parse_compile_execute(frozen_data, MP_PARSE_FILE_INPUT,
+                EXEC_FLAG_SOURCE_IS_RAW_CODE | EXEC_FLAG_NO_INTERRUPT);
         #endif
 
         default:

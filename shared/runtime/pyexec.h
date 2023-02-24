@@ -47,6 +47,7 @@ int pyexec_friendly_repl(void);
 int pyexec_file(const char *filename);
 int pyexec_file_if_exists(const char *filename);
 int pyexec_frozen_module(const char *name);
+int pyexec_frozen_boot_module(const char *name);
 void pyexec_event_repl_init(void);
 int pyexec_event_repl_process_char(int c);
 extern uint8_t pyexec_repl_active;
