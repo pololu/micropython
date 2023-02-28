@@ -90,7 +90,7 @@
 
 #define USBD_MAX_POWER_MA (250)
 
-#define USBD_DESC_STR_MAX (20)
+#define USBD_DESC_STR_MAX (40)
 
 #if CFG_TUD_CDC
 #define USBD_ITF_CDC (0) // needs 2 interfaces
